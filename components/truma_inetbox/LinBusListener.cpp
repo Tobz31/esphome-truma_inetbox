@@ -393,7 +393,8 @@ void LinBusListener::process_log_queue(TickType_t xTicksToWait) {
                     log_msg.message_source_know ? (log_msg.message_from_master ? " - MASTER" : " - SLAVE") : "",
                     log_msg.current_data_valid ? "" : "INVALID");
         } else {
-          ESP_LOGV(TAG, "PID %02X      %s %s %S", current_PID_, format_hex_pretty(log_msg.data, log_msg.len).c_str(),
+         // ESP_LOGV(TAG, "PID %02X      %s %s %S", current_PID_, format_hex_pretty(log_msg.data, log_msg.len).c_str(),
+          ESP_LOGV(TAG, "PID %02X      %s %s %s", current_PID_, format_hex_pretty(log_msg.data, log_msg.len).c_str(),
                    log_msg.message_source_know ? (log_msg.message_from_master ? " - MASTER" : " - SLAVE") : "",
                    log_msg.current_data_valid ? "" : "INVALID");
         }
