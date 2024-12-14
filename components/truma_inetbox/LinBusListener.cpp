@@ -176,6 +176,16 @@ void LinBusListener::read_lin_frame_() {
         this->current_state_ = READ_STATE_SYNC;
       }
       break;
+    case READ_STATE_SYNC:
+      if (!this->read_byte(&buf) || buf != LIN_SYNC) {
+        log_msg.type = QUEUE_LOG_MSG_TYPE::VV_READ_LIN_FRAME_SYNC_EXPECTED;
+        log_msg.current_PID = buf;
+        TRUMA_LOGVV_ISR(log_msg);
+        this->current_state_ = READ_STATE_BREAK;
+      } else {
+        this->current_state_ = READ_STATE_SID;
+      }
+      break;
       // Check if there was an unanswered message before break.
       if (this->current_PID_with_parity_ != 0x00 && this->current_PID_ != 0x00 && this->current_data_valid) {
         if (this->current_data_count_ < 8) {
@@ -212,18 +222,7 @@ void LinBusListener::read_lin_frame_() {
         }
       }
       break;
-    case READ_STATE_SYNC:
-      // Second is Sync expected
-      if (!this->read_byte(&buf) || buf != LIN_SYNC) {
-        log_msg.type = QUEUE_LOG_MSG_TYPE::VV_READ_LIN_FRAME_SYNC_EXPECTED;
-        log_msg.current_PID = buf;
-        TRUMA_LOGVV_ISR(log_msg);
-        this->current_state_ = buf == LIN_BREAK ? READ_STATE_SYNC : READ_STATE_BREAK;
-      } else {
-        // ESP_LOGVV(TAG, "%02X SYNC found.", buf);
-        this->current_state_ = READ_STATE_SID;
-      }
-      break;
+
     case READ_STATE_SID:
       this->read_byte(&(this->current_PID_with_parity_));
       this->current_PID_ = this->current_PID_with_parity_ & 0x3F;
